@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOO의 미니홈피</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://cdn.jsdelivr.net/gh/webfontworld/DungGeunMo/DungGeunMo.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    text-rendering: optimizeSpeed;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    font-family: 'DungGeunMo', 'Galmuri11', "Gulim", monospace;
+    color: #3A0066;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* 제목류: 통통한 버블 폰트 (본문은 계속 픽셀 폰트 유지) */
+  .win-title, .titlebar > span:first-child, .banner h1,
+  .profile-card h2, .mini-box h3, .diary-post h3 {
+    font-family: 'Jua', 'DungGeunMo', sans-serif;
+  }
+
+  /* ===== 빈티지 화질 저하 효과 ===== */
+  .win-window {
+    filter: saturate(0.75) contrast(1.1) brightness(0.98);
+  }
+
+  .crt-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .crt-noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.12;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .crt-scanlines {
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 1px,
+      rgba(0,0,0,0.10) 2px,
+      rgba(0,0,0,0.10) 3px
+    );
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  .crt-vignette {
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.25) 100%);
+  }
+
+  /* ===== 윈도우 XP 스타일 탐색기 창 (인디고 테마) ===== */
+  .win-window {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    background: #EDE3F7;
+    border: 2px solid #3A0066;
+    border-radius: 0;
+    overflow: hidden;
+    font-family: 'DungGeunMo', 'Galmuri11', Tahoma, "Malgun Gothic", monospace;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .win-titlebar {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 45%),
+      linear-gradient(180deg, #9B6FD6 0%, #6B2FA6 40%, #4B0082 70%, #3A0066 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    color: white;
+    padding: 4px 4px 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom: 2px solid #3A0066;
+  }
+
+  .win-titlebar .win-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+  }
+
+  .win-titlebar .win-title .ico {
+    font-size: 13px;
+  }
+
+  .win-controls {
+    display: flex;
+    gap: 3px;
+  }
+
+  .win-controls button {
+    width: 21px;
+    height: 19px;
+    border: 1px solid #3A0066;
+    border-radius: 3px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 50%),
+      linear-gradient(180deg, #9B6FD6, #4B0082);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: default;
+  }
+
+  .win-controls button:active {
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  .win-controls button.close {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 50%),
+      linear-gradient(180deg, #ff8f7f, #e0311a);
+    border-color: #8a1a00;
+  }
+
+  .win-icontoolbar {
+    background: #EDE3F7;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 2px solid #3A0066;
+  }
+
+  .win-icontoolbar .tool-btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 0;
+    font-size: 11px;
+    color: #3A0066;
+  }
+
+  .win-icontoolbar .tool-btn .ico {
+    font-size: 13px;
+  }
+
+  .win-icontoolbar .divider {
+    width: 1px;
+    align-self: stretch;
+    background: #B79AE0;
+    margin: 2px 4px;
+  }
+
+  .win-body {
+    background-color: #E7F5DE;
+    background-image:
+      radial-gradient(circle, #C6D4F2 9px, transparent 9px),
+      radial-gradient(circle, #C6D4F2 9px, transparent 9px);
+    background-size: 46px 46px;
+    background-position: 0 0, 23px 23px;
+    padding: 48px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .bg-star {
+    position: absolute;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 0 0 4px #C6D4F2;
+    pointer-events: none;
+    animation: twinkle 2.4s ease-in-out infinite;
+  }
+
+  .win-statusbar {
+    background: #EDE3F7;
+    border-top: 1px solid #B79AE0;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: #3A0066;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .frame {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    background: #FFFCCC;
+    border: 3px solid #4B0082;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -2px 0 rgba(0,0,0,0.12);
+  }
+
+  /* 상단 타이틀 바 */
+  .titlebar {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 55%),
+      linear-gradient(180deg, #9B6FD6 0%, #6B2FA6 45%, #4B0082 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    color: white;
+    padding: 8px 14px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+
+  .titlebar .dots {
+    display: flex;
+    gap: 3px;
+  }
+
+  .titlebar .dots span {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  /* 카테고리 탭 */
+  .nav-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 3px;
+    padding: 8px 10px;
+    background: #EDE3F7;
+    border-bottom: 2px dashed #4B0082;
+    overflow-x: auto;
+  }
+
+  .nav-tab {
+    flex: 1;
+    text-align: center;
+    padding: 5px 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 40%),
+      linear-gradient(180deg, #FBF9FE 0%, #E4D9F5 45%, #C9B8E8 46%, #EDE5F9 100%);
+    color: #3A0066;
+    border: 1px solid #8A6BB8;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+    cursor: pointer;
+  }
+
+  .nav-tab.active {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 55%),
+      linear-gradient(180deg, #9B6FD6, #4B0082);
+    color: #fff;
+  }
+
+  /* 메인 배너 */
+  .banner {
+    text-align: center;
+    padding: 18px 10px 10px;
+    background: #FFFCCC;
+    border-bottom: 2px dashed #4B0082;
+  }
+
+  .banner h1 {
+    font-size: 24px;
+    color: #6B2FA6;
+    background: linear-gradient(180deg, #fff0fb 0%, #ffb3ec 25%, #d68cff 50%, #9b5fe0 75%, #6B2FA6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1px #3A0066;
+    filter: drop-shadow(1px 1px 0 #fff) drop-shadow(2px 3px 1px rgba(59,0,102,0.5));
+  }
+
+  .banner p {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #4B0082;
+  }
+
+  .banner .sparkle {
+    color: #CCAA00;
+  }
+
+  /* 카운터: 글로시 패널 + 디지털 표시창 */
+  .counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 50%),
+      linear-gradient(180deg, #EDE3F7, #C9B8E8);
+    margin: 10px 20px;
+    border: 1px solid #6B2FA6;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.12);
+    padding: 8px 14px;
+    color: #3A0066;
+  }
+
+  .counter b {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #4B0082;
+    background: #FFFCCC;
+    border: 1px solid #C9B8E8;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+    padding: 1px 6px;
+  }
+
+  .counter .eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .counter .eq span {
+    width: 3px;
+    background: #FFF066;
+    box-shadow: 0 0 3px #FFDA00;
+    animation: eqbounce 0.9s ease-in-out infinite;
+  }
+
+  .counter .eq span:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .counter .eq span:nth-child(2) { height: 90%; animation-delay: 0.15s; }
+  .counter .eq span:nth-child(3) { height: 60%; animation-delay: 0.3s; }
+  .counter .eq span:nth-child(4) { height: 100%; animation-delay: 0.45s; }
+
+  @keyframes eqbounce {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+
+  /* 본문 레이아웃: 카테고리별 페이지 전환 */
+  .pages {
+    flex: 1;
+  }
+
+  .page {
+    display: none;
+    padding: 16px 20px 24px;
+  }
+
+  .page.active {
+    display: block;
+  }
+
+  .page-placeholder {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6B2FA6;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .page-placeholder .big {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .profile-card {
+    background: #fff;
+    border: 2px solid #6B2FA6;
+    border-radius: 0;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .photo-wrap {
+    position: relative;
+    width: 130px;
+    margin: 0 auto 10px;
+  }
+
+  .photo-wrap .sticker {
+    position: absolute;
+    pointer-events: none;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    animation: twinkle 1.8s ease-in-out infinite;
+  }
+
+  .photo-wrap .s1 { top: -16px; left: -18px; font-size: 22px; transform: rotate(-15deg); animation-delay: 0s; }
+  .photo-wrap .s2 { top: -12px; right: -16px; font-size: 18px; transform: rotate(12deg); animation-delay: 0.3s; }
+  .photo-wrap .s3 { bottom: -6px; left: -20px; font-size: 16px; transform: rotate(8deg); animation-delay: 0.6s; }
+  .photo-wrap .s4 { bottom: 14px; right: -22px; font-size: 24px; transform: rotate(-10deg); animation-delay: 0.9s; }
+  .photo-wrap .s5 { top: 48%; left: -26px; font-size: 15px; transform: rotate(20deg); animation-delay: 1.2s; }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .profile-photo {
+    width: 130px;
+    height: 130px;
+    border: 4px solid #6B2FA6;
+    border-radius: 0;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 35%),
+      #FFF066;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 46px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .profile-photo:hover {
+    outline: 2px dashed #3A0066;
+    outline-offset: 2px;
+  }
+
+  .profile-photo img {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-photo img.has-photo {
+    display: block;
+  }
+
+  .profile-card h2 {
+    font-size: 15px;
+    color: #3A0066;
+    margin-bottom: 4px;
+  }
+
+  .profile-card p {
+    font-size: 11px;
+    color: #999;
+  }
+
+  .profile-card [contenteditable] {
+    cursor: text;
+    border-radius: 2px;
+  }
+
+  .profile-card [contenteditable]:hover {
+    outline: 1px dashed #B79AE0;
+  }
+
+  .profile-card [contenteditable]:focus {
+    outline: 2px solid #4B0082;
+    background: #FFFCCC;
+  }
+
+  .profile-card [contenteditable]:empty::before {
+    content: attr(data-placeholder);
+    color: #bbb;
+  }
+
+  .profile-intro {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #555;
+    line-height: 1.5;
+    padding: 4px;
+  }
+
+  .mini-box {
+    background: #fff;
+    border: 2px solid #6B2FA6;
+    border-radius: 0;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .mini-box h3 {
+    font-size: 12px;
+    color: #4B0082;
+    border-bottom: 1px dashed #B79AE0;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
+  .mini-box ul {
+    list-style: none;
+    font-size: 11px;
+    line-height: 1.9;
+  }
+
+  .mini-box ul li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mini-box ul li::before {
+    content: "★";
+    display: inline-block;
+    animation: twinkle 1.6s ease-in-out infinite;
+  }
+
+  .diary-post {
+    background: #fff;
+    border: 2px solid #6B2FA6;
+    border-radius: 0;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .diary-post h3 {
+    font-size: 13px;
+    color: #4B0082;
+    margin-bottom: 6px;
+  }
+
+  .diary-post .date {
+    font-size: 10px;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+
+  .diary-post p {
+    font-size: 12px;
+    line-height: 1.7;
+    color: #555;
+  }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .photo-grid div {
+    aspect-ratio: 1;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 35%),
+      #FFF066;
+    border: 2px solid #fff;
+    outline: 1px solid #B79AE0;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  /* 방명록 */
+  .guestbook .entry {
+    border-bottom: 1px dotted #B79AE0;
+    padding: 8px 0;
+    font-size: 12px;
+  }
+
+  .guestbook .entry b {
+    color: #4B0082;
+    margin-right: 6px;
+  }
+
+  .guestbook .entry span {
+    color: #999;
+    font-size: 10px;
+    float: right;
+  }
+
+  .guestbook-input {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .guestbook-input input {
+    flex: 1;
+    border: 2px solid #6B2FA6;
+    border-radius: 0;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .guestbook-input button {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%),
+      #FFF066;
+    color: #3A0066;
+    border: 1px solid #CCAA00;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    padding: 6px 14px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .guestbook-input button:active {
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.35);
+  }
+
+  .guestbook-input button:hover {
+    background: #FFDA00;
+  }
+
+  /* 하단 */
+  footer {
+    text-align: center;
+    font-size: 10px;
+    color: #3A0066;
+    padding: 14px;
+    background: #fff;
+    border-top: 2px dashed #4B0082;
+  }
+
+  /* 커서 반짝이 트레일 */
+  .cursor-sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 14px;
+    z-index: 10000;
+    animation: sparkle-fade 0.8s ease-out forwards;
+  }
+
+  @keyframes sparkle-fade {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translate(-50%, -160%) scale(0.4) rotate(45deg); }
+  }
+
+  .visitor-badge {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%),
+      #FFF066;
+    color: #3A0066;
+    border: 1px solid #CCAA00;
+    border-radius: 10px;
+    padding: 3px 12px;
+    font-size: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="win-window">
+
+  <div class="win-titlebar">
+    <div class="win-title">OOO의 미니홈피</div>
+    <div class="win-controls">
+      <button>_</button>
+      <button>□</button>
+      <button class="close">✕</button>
+    </div>
+  </div>
+
+  <div class="win-icontoolbar">
+    <div class="tool-btn"><span class="ico">◀</span>뒤로</div>
+    <div class="tool-btn"><span class="ico">▶</span>앞으로</div>
+    <div class="divider"></div>
+    <div class="tool-btn"><span class="ico">⌂</span>위로</div>
+    <div class="divider"></div>
+    <div class="tool-btn">검색</div>
+  </div>
+
+  <div class="win-body">
+
+    <span class="bg-star" style="top:6%; left:10%; animation-delay:0s;">✦</span>
+    <span class="bg-star" style="top:14%; left:82%; animation-delay:0.4s;">✧</span>
+    <span class="bg-star" style="top:30%; left:5%; animation-delay:0.8s;">✦</span>
+    <span class="bg-star" style="top:42%; left:92%; animation-delay:1.2s;">✧</span>
+    <span class="bg-star" style="top:58%; left:8%; animation-delay:1.6s;">✦</span>
+    <span class="bg-star" style="top:66%; left:88%; animation-delay:0.2s;">✧</span>
+    <span class="bg-star" style="top:80%; left:14%; animation-delay:0.6s;">✦</span>
+    <span class="bg-star" style="top:88%; left:78%; animation-delay:1s;">✧</span>
+    <span class="bg-star" style="top:20%; left:50%; animation-delay:1.4s;">✦</span>
+
+  <div class="frame">
+
+    <div class="titlebar">
+      <span>♡ OOO's MiniHomepage ♡</span>
+      <span class="dots"><span>✦</span><span>✦</span><span>✦</span></span>
+    </div>
+
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-page="profile">프로필</div>
+      <div class="nav-tab" data-page="bgm">BGM</div>
+      <div class="nav-tab" data-page="guestbook">방명록</div>
+      <div class="nav-tab" data-page="calendar">캘린더</div>
+      <div class="nav-tab" data-page="diary">일기장</div>
+      <div class="nav-tab" data-page="taste">취향정보</div>
+      <div class="nav-tab" data-page="settings">설정</div>
+    </div>
+
+    <div class="banner">
+      <h1>☆*: .｡. 여기는 OOO의 미니홈피 .｡.:*☆</h1>
+      <p><span class="sparkle">✧</span> 놀러와줘서 고마워요! 방명록 남기고 가요 <span class="sparkle">✧</span></p>
+    </div>
+
+    <div class="counter">
+      <span>TODAY <b>128</b></span>
+      <span>TOTAL <b>3,492</b></span>
+      <span>BGM <b>재생중인 노래 제목</b><span class="eq"><span></span><span></span><span></span><span></span></span></span>
+    </div>
+
+    <div class="pages">
+
+      <div class="page active" id="page-profile">
+        <div class="profile-card">
+          <div class="photo-wrap">
+            <span class="sticker s1">★</span>
+            <span class="sticker s2">♥</span>
+            <span class="sticker s3">✦</span>
+            <span class="sticker s4">♦</span>
+            <span class="sticker s5">✧</span>
+            <div class="profile-photo" id="photoBox" title="클릭해서 사진 바꾸기">
+              <span id="photoPlaceholder">＋</span>
+              <img id="photoImg" alt="프로필 사진">
+            </div>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" hidden>
+
+          <h2 id="profileName" contenteditable="true" data-placeholder="이름을 입력하세요">이름을 입력하세요</h2>
+          <p class="profile-meta">
+            <span id="profileAge" contenteditable="true" data-placeholder="나이">나이</span> ·
+            <span id="profileJob" contenteditable="true" data-placeholder="직업/신분">직업/신분</span>
+          </p>
+          <p id="profileIntro" class="profile-intro" contenteditable="true" data-placeholder="한줄소개를 적어보세요">한줄소개를 적어보세요</p>
+
+        </div>
+
+        <div class="mini-box">
+          <h3>ⓘ 미니 정보</h3>
+          <ul>
+            <li>좋아하는 것: 여기에 취미</li>
+            <li>좋아하는 색: 핑크</li>
+            <li>기분: 오늘도 좋음 :)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page" id="page-bgm">
+        <div class="page-placeholder">
+          <span class="big">♪</span>
+          BGM 기능은 다음 단계에서 만들 거예요.<br>
+          내가 고른 음악을 재생할 수 있는 공간이 여기 들어와요.
+        </div>
+      </div>
+
+      <div class="page" id="page-guestbook">
+        <div class="diary-post guestbook">
+          <h3>♥ 방명록</h3>
+          <div class="entry"><b>친구1</b>놀러왔어요! 홈피 완전 예쁘다 <span>08.20</span></div>
+          <div class="entry"><b>친구2</b>담아갈게요 ㅎㅎ <span>08.19</span></div>
+          <div class="entry"><b>친구3</b>오늘도 화이팅! <span>08.18</span></div>
+          <div class="guestbook-input">
+            <input type="text" placeholder="방명록을 남겨주세요 :)">
+            <button>등록</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-calendar">
+        <div class="page-placeholder">
+          <span class="big">❖</span>
+          캘린더 기능은 다음 단계에서 만들 거예요.<br>
+          날짜별로 일정을 등록하고 볼 수 있는 공간이 여기 들어와요.
+        </div>
+      </div>
+
+      <div class="page" id="page-diary">
+        <div class="diary-post">
+          <h3>▶ 공지 / 자기소개</h3>
+          <div class="date">2026.08.21</div>
+          <p>
+            안녕하세요! 제 미니홈피에 놀러와주셔서 감사해요.
+            여기에 자기소개, 요즘 관심사, 하고 싶은 말을 자유롭게 적어보세요.
+            예를 들어 "요즘 OOO에 빠져있어요!" 같은 문장도 좋아요.
+          </p>
+          <div class="photo-grid">
+            <div>＋</div>
+            <div>＋</div>
+            <div>＋</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-taste">
+        <div class="page-placeholder">
+          <span class="big">❖</span>
+          취향정보 기능은 다음 단계에서 만들 거예요.<br>
+          내 취향에 대해 자유롭게 쓸 수 있는 공간이 여기 들어와요.
+        </div>
+      </div>
+
+      <div class="page" id="page-settings">
+        <div class="page-placeholder">
+          <span class="big">❖</span>
+          설정 기능은 다음 단계에서 만들 거예요.<br>
+          미니홈피 테마를 직접 꾸밀 수 있는 공간이 여기 들어와요.
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      ⓒ 2026 OOO's MiniHomepage. Made with ♥
+      <div class="visitor-badge">★ 방문자 뱃지 <b>#128</b></div>
+    </footer>
+
+  </div>
+
+  </div>
+
+  <div class="win-statusbar">
+    <span>완료</span>
+    <span>인터넷</span>
+  </div>
+
+</div>
+
+<div class="crt-overlay crt-vignette"></div>
+<div class="crt-noise"></div>
+<div class="crt-overlay crt-scanlines"></div>
+
+<script>
+  // ===== 탭 전환 (가장 먼저 연결 — 이 아래 코드가 실패해도 탭은 항상 동작해야 함) =====
+  var navTabs = document.querySelectorAll('.nav-tab');
+  var pages = document.querySelectorAll('.page');
+
+  navTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      navTabs.forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+
+      var target = 'page-' + tab.getAttribute('data-page');
+      pages.forEach(function (p) {
+        p.classList.toggle('active', p.id === target);
+      });
+    });
+  });
+
+  // ===== localStorage 안전 래퍼 =====
+  // file:// 로 직접 열면 브라우저(특히 Safari)가 localStorage를 막아 에러를 던질 수 있어서,
+  // 그 에러가 다른 기능까지 멈추지 않도록 try/catch로 감쌈.
+  var storage = {
+    get: function (key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    },
+    set: function (key, val) {
+      try { localStorage.setItem(key, val); } catch (e) {}
+    },
+    remove: function (key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
+  };
+
+  function initEditable(id, storageKey, placeholder) {
+    var el = document.getElementById(id);
+    var saved = storage.get(storageKey);
+    if (saved) el.textContent = saved;
+
+    el.addEventListener('focus', function () {
+      if (el.textContent === placeholder) el.textContent = '';
+    });
+
+    el.addEventListener('blur', function () {
+      var val = el.textContent.trim();
+      if (val) {
+        storage.set(storageKey, val);
+      } else {
+        storage.remove(storageKey);
+        el.textContent = placeholder;
+      }
+    });
+  }
+
+  initEditable('profileName', 'mh_profileName', '이름을 입력하세요');
+  initEditable('profileAge', 'mh_profileAge', '나이');
+  initEditable('profileJob', 'mh_profileJob', '직업/신분');
+  initEditable('profileIntro', 'mh_profileIntro', '한줄소개를 적어보세요');
+
+  var photoInput = document.getElementById('photoInput');
+  var photoBox = document.getElementById('photoBox');
+  var photoImg = document.getElementById('photoImg');
+  var photoPlaceholder = document.getElementById('photoPlaceholder');
+
+  var savedPhoto = storage.get('mh_profilePhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoImg.classList.add('has-photo');
+    photoPlaceholder.style.display = 'none';
+  }
+
+  photoBox.addEventListener('click', function () {
+    photoInput.click();
+  });
+
+  photoInput.addEventListener('change', function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      storage.set('mh_profilePhoto', reader.result);
+      photoImg.src = reader.result;
+      photoImg.classList.add('has-photo');
+      photoPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ===== 커서 반짝이 트레일 =====
+  var lastSparkleTime = 0;
+  document.addEventListener('mousemove', function (e) {
+    var now = Date.now();
+    if (now - lastSparkleTime < 90) return;
+    lastSparkleTime = now;
+
+    var el = document.createElement('span');
+    el.className = 'cursor-sparkle';
+    el.textContent = Math.random() > 0.5 ? '✦' : '★';
+    el.style.left = e.clientX + 'px';
+    el.style.top = e.clientY + 'px';
+    document.body.appendChild(el);
+    el.addEventListener('animationend', function () {
+      el.remove();
+    });
+  });
+</script>
+
+</body>
+</html>
