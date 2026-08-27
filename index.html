@@ -920,6 +920,30 @@
   .calendar-cell-dot.visibility-friends { background: #8A6BB8; }
   .calendar-cell-dot.visibility-private { background: #B79AE0; }
 
+  .calendar-cell-cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .calendar-cell.has-cover .calendar-cell-num {
+    position: relative;
+    z-index: 1;
+    background: rgba(58, 0, 102, 0.65);
+    color: #fff;
+    padding: 1px 3px;
+    border-radius: 3px;
+    line-height: 1;
+  }
+
+  .calendar-cell.has-cover .calendar-cell-dot {
+    z-index: 1;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.85);
+  }
+
   /* 일기 쓰기/읽기 화면 */
   .diary-write, .diary-read {
     display: none;
@@ -992,6 +1016,30 @@
     font-size: 10px;
     line-height: 1;
     cursor: pointer;
+  }
+
+  .diary-photo-cover-btn {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(58, 0, 102, 0.55);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .diary-photo-thumb.is-cover {
+    outline: 2px solid #FFD400;
+  }
+
+  .diary-photo-thumb.is-cover .diary-photo-cover-btn {
+    background: #FFD400;
+    color: #4B0082;
   }
 
   .diary-photo-add {
@@ -2328,6 +2376,7 @@
 
   var diaryEditingKey = null;
   var diaryEditingPhotos = [];
+  var diaryEditingCover = null;
   var diaryCurrentVisibility = 'public';
 
   function showDiaryCalendar() {
@@ -2370,14 +2419,22 @@
         cell.classList.add('today');
       }
 
+      var key = diaryDateKey(calYear, calMonth, d);
+      var entry = diaryEntries[key];
+      var visible = canViewDiaryEntry(entry);
+
+      if (entry && visible && entry.cover) {
+        cell.classList.add('has-cover');
+        var coverImg = document.createElement('img');
+        coverImg.className = 'calendar-cell-cover-img';
+        coverImg.src = entry.cover;
+        cell.appendChild(coverImg);
+      }
+
       var numEl = document.createElement('span');
       numEl.className = 'calendar-cell-num';
       numEl.textContent = d;
       cell.appendChild(numEl);
-
-      var key = diaryDateKey(calYear, calMonth, d);
-      var entry = diaryEntries[key];
-      var visible = canViewDiaryEntry(entry);
 
       if (entry && visible) {
         var dot = document.createElement('span');
@@ -2432,10 +2489,23 @@
     diaryEditingPhotos.forEach(function (src, idx) {
       var thumb = document.createElement('div');
       thumb.className = 'diary-photo-thumb';
+      var isCover = src === diaryEditingCover;
+      thumb.classList.toggle('is-cover', isCover);
 
       var img = document.createElement('img');
       img.src = src;
       thumb.appendChild(img);
+
+      var coverBtn = document.createElement('button');
+      coverBtn.type = 'button';
+      coverBtn.className = 'diary-photo-cover-btn';
+      coverBtn.title = isCover ? '대표사진 해제' : '대표사진으로 설정';
+      coverBtn.textContent = isCover ? '★' : '☆';
+      coverBtn.addEventListener('click', function () {
+        diaryEditingCover = isCover ? null : src;
+        renderDiaryWritePhotos();
+      });
+      thumb.appendChild(coverBtn);
 
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
@@ -2444,6 +2514,7 @@
       removeBtn.textContent = '✕';
       removeBtn.addEventListener('click', function () {
         diaryEditingPhotos.splice(idx, 1);
+        if (diaryEditingCover === src) diaryEditingCover = null;
         renderDiaryWritePhotos();
       });
       thumb.appendChild(removeBtn);
@@ -2485,6 +2556,7 @@
     diaryEditingKey = key;
     var entry = diaryEntries[key];
     diaryEditingPhotos = entry ? entry.photos.slice() : [];
+    diaryEditingCover = entry && entry.cover && diaryEditingPhotos.indexOf(entry.cover) !== -1 ? entry.cover : null;
 
     diaryWriteDate.textContent = diaryDateLabel(key);
     diaryWriteContent.value = entry ? entry.content : '';
@@ -2506,9 +2578,12 @@
       return;
     }
 
+    var cover = diaryEditingCover && diaryEditingPhotos.indexOf(diaryEditingCover) !== -1 ? diaryEditingCover : null;
+
     diaryEntries[diaryEditingKey] = {
       content: content,
       photos: diaryEditingPhotos.slice(),
+      cover: cover,
       visibility: diaryCurrentVisibility
     };
     saveDiaryEntries();
