@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "minihomepage",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["nocache_server.py"],
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "--cwd", "apps/web", "dev:full"],
       "port": 9321
     }
   ]
