@@ -59,7 +59,7 @@ export function SettingsPage({ active }: { active: boolean }) {
         <div className="settings-body">
           {!isOwner && (
             <p className="settings-locked-msg">
-              ⚠ 주인모드로 로그인해야 설정을 바꿀 수 있어요. 하단의 "주인모드 로그인" 버튼을 눌러주세요.
+              ⚠ 주인장모드로 로그인해야 설정을 바꿀 수 있어요. 하단의 "주인장모드 로그인" 버튼을 눌러주세요.
             </p>
           )}
 

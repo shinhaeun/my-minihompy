@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { getSupabase } from '../lib/supabase';
-import { requireOwner } from '../lib/auth';
+import { requireOwner, isOwnerSession } from '../lib/auth';
 
 export const guestbookRoute = new Hono<{ Bindings: Env }>();
 
@@ -48,9 +48,11 @@ guestbookRoute.post('/', async (c) => {
   const message = typeof body.message === 'string' ? body.message.trim() : '';
   if (!message) return c.json({ error: 'message required' }, 400);
 
+  const name = (await isOwnerSession(c)) ? '주인장' : '방문자';
+
   const { data, error } = await supabase
     .from('guestbook_entries')
-    .insert({ name: '방문자', message, pinned: false })
+    .insert({ name, message, pinned: false })
     .select('*')
     .single<GuestbookRow>();
   if (error) return c.json({ error: error.message }, 500);

@@ -130,7 +130,7 @@ export function WindowChrome({
                 className={`owner-mode-btn${isOwner ? ' active' : ''}`}
                 onClick={onOwnerModeClick}
               >
-                {isOwner ? '주인모드 로그아웃' : '주인모드 로그인'}
+                {isOwner ? '주인장모드 로그아웃' : '주인장모드 로그인'}
               </button>
             </footer>
           </div>
