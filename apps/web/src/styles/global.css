@@ -336,6 +336,8 @@
     -webkit-text-stroke: 1px #3A0066;
     filter: drop-shadow(0 1px 0 #fff) drop-shadow(0 2px 1px rgba(59,0,102,0.5));
     text-align: center;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   .banner p {
@@ -1454,5 +1456,9 @@
     .tool-search {
       flex-shrink: 0;
       white-space: nowrap;
+    }
+
+    .banner h1 {
+      font-size: 20px;
     }
   }
