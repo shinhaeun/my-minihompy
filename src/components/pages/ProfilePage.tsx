@@ -40,7 +40,11 @@ export function ProfilePage({ active }: { active: boolean }) {
           <span className="sticker s4">♦</span>
           <span className="sticker s5">✧</span>
           <div className="profile-photo">
-            {profile.photoUrl ? <img src={profile.photoUrl} alt="프로필 사진" /> : <span>＋</span>}
+            {profile.photoUrl ? (
+              <img className="has-photo" src={profile.photoUrl} alt="프로필 사진" />
+            ) : (
+              <span>＋</span>
+            )}
           </div>
         </div>
 
