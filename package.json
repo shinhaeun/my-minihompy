@@ -1,0 +1,8 @@
+{
+  "name": "my-minihompy",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "scripts"
+  ]
+}
