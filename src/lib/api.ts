@@ -4,6 +4,7 @@ import type {
   GuestbookEntry,
   Profile,
   SessionResponse,
+  VisitCounts,
 } from '../shared/types';
 
 class ApiError extends Error {
@@ -89,6 +90,9 @@ export const api = {
     },
     removePhoto: (date: string, photoId: string) =>
       request<void>(`/api/diary/${date}/photos/${photoId}`, { method: 'DELETE' }),
+  },
+  visits: {
+    ping: () => request<VisitCounts>('/api/visits', { method: 'POST' }),
   },
 };
 
