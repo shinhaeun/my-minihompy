@@ -4,7 +4,7 @@
     {
       "name": "minihomepage",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["run", "--cwd", "apps/web", "dev:full"],
+      "runtimeArgs": ["run", "dev:full"],
       "port": 9321
     }
   ]
