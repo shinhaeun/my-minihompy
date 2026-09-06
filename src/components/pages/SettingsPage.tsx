@@ -70,7 +70,7 @@ export function SettingsPage({ active }: { active: boolean }) {
               onClick={() => isOwner && photoInputRef.current?.click()}
             >
               {profile.photoUrl ? (
-                <img src={profile.photoUrl} alt="프로필 사진 미리보기" />
+                <img className="has-photo" src={profile.photoUrl} alt="프로필 사진 미리보기" />
               ) : (
                 <span>＋</span>
               )}
