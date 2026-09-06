@@ -3,7 +3,7 @@
 //
 // 사용법 (repo 루트에서):
 //   SUPABASE_URL=... \
-//   SUPABASE_SERVICE_ROLE_KEY=... \
+//   SUPABASE_SECRET_KEY=... \
 //   SEED_OWNER_QUESTION='좋아하는 것은?' \
 //   SEED_OWNER_ANSWER='코구마' \
 //   SEED_OWNER_PIN='1818' \
@@ -43,14 +43,14 @@ async function hashSecret(plain: string): Promise<string> {
 
 async function main() {
   const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey = process.env.SUPABASE_SECRET_KEY;
   const question = process.env.SEED_OWNER_QUESTION;
   const answer = process.env.SEED_OWNER_ANSWER;
   const pin = process.env.SEED_OWNER_PIN;
 
   if (!url || !serviceKey || !question || !answer || !pin) {
     console.error(
-      'SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SEED_OWNER_QUESTION, SEED_OWNER_ANSWER, SEED_OWNER_PIN 환경변수가 모두 필요합니다.',
+      'SUPABASE_URL, SUPABASE_SECRET_KEY, SEED_OWNER_QUESTION, SEED_OWNER_ANSWER, SEED_OWNER_PIN 환경변수가 모두 필요합니다.',
     );
     process.exit(1);
   }
