@@ -256,6 +256,14 @@
     box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -2px 0 rgba(0,0,0,0.12);
   }
 
+  /* PC에서는 창 크기를 늘리고 줄여도 프레임이 항상 같은 크기로 보이도록 고정.
+     화면이 640px보다 좁아지면(모바일 등) 위의 반응형 규칙으로 자연스럽게 줄어듦 */
+  @media (min-width: 641px) {
+    .frame {
+      width: 640px;
+    }
+  }
+
   /* 상단 타이틀 바 */
   .titlebar {
     background:
