@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Toolbar } from './Toolbar';
 import { NavTabs } from './NavTabs';
 import type { NavPage, Page } from '../../shared/types';
 import { useSession } from '../../context/SessionContext';
 import { useModal } from '../../context/ModalContext';
+import { api } from '../../lib/api';
 
 const BG_STARS = [
   { top: '6%', left: '10%', delay: '0s', char: '✦' },
@@ -40,6 +41,11 @@ export function WindowChrome({
 }: WindowChromeProps) {
   const { isOwner, logout } = useSession();
   const { ownerLogin } = useModal();
+  const [visits, setVisits] = useState({ today: 0, total: 0 });
+
+  useEffect(() => {
+    api.visits.ping().then(setVisits).catch(() => {});
+  }, []);
 
   async function onOwnerModeClick() {
     if (isOwner) {
@@ -96,10 +102,10 @@ export function WindowChrome({
 
             <div className="counter">
               <span>
-                TODAY <b>128</b>
+                TODAY <b>{visits.today.toLocaleString('ko-KR')}</b>
               </span>
               <span>
-                TOTAL <b>3,492</b>
+                TOTAL <b>{visits.total.toLocaleString('ko-KR')}</b>
               </span>
               <span>
                 BGM <b>재생중인 노래 제목</b>
@@ -117,7 +123,7 @@ export function WindowChrome({
             <footer>
               ⓒ 2026 OOO's MiniHomepage. Made with ♥
               <div className="visitor-badge">
-                ★ 방문자 뱃지 <b>#128</b>
+                ★ 방문자 뱃지 <b>#{visits.today.toLocaleString('ko-KR')}</b>
               </div>
               <button
                 type="button"

@@ -42,6 +42,11 @@ export interface SessionResponse {
   isOwner: boolean;
 }
 
+export interface VisitCounts {
+  today: number;
+  total: number;
+}
+
 export const NAV_PAGES = [
   'profile',
   'bgm',

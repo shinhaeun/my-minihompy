@@ -74,3 +74,8 @@ export const ownerLoginAttempts = pgTable('owner_login_attempts', {
 }, (table) => [
   index('owner_login_attempts_ip_attempted_at_idx').on(table.ip, table.attemptedAt),
 ]);
+
+export const visitCounts = pgTable('visit_counts', {
+  visitDate: date('visit_date').primaryKey(),
+  count: integer('count').notNull().default(0),
+});
