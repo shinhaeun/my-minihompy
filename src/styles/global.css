@@ -1340,7 +1340,7 @@
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
   }
 
-  /* 주인모드 토글 */
+  /* 주인장모드 토글 */
   .owner-mode-btn {
     display: block;
     margin: 10px auto 0;
