@@ -4,7 +4,11 @@ import { NavTabs } from './NavTabs';
 import type { NavPage, Page } from '../../shared/types';
 import { useSession } from '../../context/SessionContext';
 import { useModal } from '../../context/ModalContext';
+import { useProfile } from '../../context/ProfileContext';
 import { api } from '../../lib/api';
+
+const DEFAULT_BANNER_TITLE = '여기는 OOO의 미니홈피';
+const DEFAULT_BANNER_SUBTITLE = '놀러와줘서 고마워요! 방명록 남기고 가요';
 
 const BG_STARS = [
   { top: '6%', left: '10%', delay: '0s', char: '✦' },
@@ -41,6 +45,7 @@ export function WindowChrome({
 }: WindowChromeProps) {
   const { isOwner, logout } = useSession();
   const { ownerLogin } = useModal();
+  const { profile } = useProfile();
   const [visits, setVisits] = useState({ today: 0, total: 0 });
 
   useEffect(() => {
@@ -93,9 +98,9 @@ export function WindowChrome({
             <NavTabs current={current} onSelect={onSelectTab} />
 
             <div className="banner">
-              <h1>☆*: .｡. 여기는 OOO의 미니홈피 .｡.:*☆</h1>
+              <h1>☆*: .｡. {profile.bannerTitle || DEFAULT_BANNER_TITLE} .｡.:*☆</h1>
               <p>
-                <span className="sparkle">✧</span> 놀러와줘서 고마워요! 방명록 남기고 가요{' '}
+                <span className="sparkle">✧</span> {profile.bannerSubtitle || DEFAULT_BANNER_SUBTITLE}{' '}
                 <span className="sparkle">✧</span>
               </p>
             </div>

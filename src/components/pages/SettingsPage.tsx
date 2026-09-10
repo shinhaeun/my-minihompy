@@ -15,6 +15,8 @@ export function SettingsPage({ active }: { active: boolean }) {
     miniLike: '',
     miniColor: '',
     miniMood: '',
+    bannerTitle: '',
+    bannerSubtitle: '',
   });
   const [saved, setSaved] = useState(false);
 
@@ -27,6 +29,8 @@ export function SettingsPage({ active }: { active: boolean }) {
       miniLike: profile.miniLike ?? '',
       miniColor: profile.miniColor ?? '',
       miniMood: profile.miniMood ?? '',
+      bannerTitle: profile.bannerTitle ?? '',
+      bannerSubtitle: profile.bannerSubtitle ?? '',
     });
   }, [profile]);
 
@@ -136,6 +140,32 @@ export function SettingsPage({ active }: { active: boolean }) {
               disabled={!isOwner}
               value={form.intro}
               onChange={(e) => set('intro', e.target.value)}
+            />
+          </div>
+
+          <h3 className="second">★ 배너 문구 설정</h3>
+
+          <div className="form-row">
+            <label htmlFor="setBannerTitle">배너 제목</label>
+            <input
+              id="setBannerTitle"
+              type="text"
+              placeholder="여기는 OOO의 미니홈피"
+              disabled={!isOwner}
+              value={form.bannerTitle}
+              onChange={(e) => set('bannerTitle', e.target.value)}
+            />
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="setBannerSubtitle">배너 문구</label>
+            <input
+              id="setBannerSubtitle"
+              type="text"
+              placeholder="놀러와줘서 고마워요! 방명록 남기고 가요"
+              disabled={!isOwner}
+              value={form.bannerSubtitle}
+              onChange={(e) => set('bannerSubtitle', e.target.value)}
             />
           </div>
 

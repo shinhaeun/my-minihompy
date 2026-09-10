@@ -11,6 +11,8 @@ const EMPTY: Profile = {
   miniColor: null,
   miniMood: null,
   photoUrl: null,
+  bannerTitle: null,
+  bannerSubtitle: null,
 };
 
 interface ProfileValue {

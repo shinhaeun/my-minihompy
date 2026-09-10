@@ -14,6 +14,8 @@ interface ProfileRow {
   mini_color: string | null;
   mini_mood: string | null;
   photo_url: string | null;
+  banner_title: string | null;
+  banner_subtitle: string | null;
 }
 
 function serialize(row: ProfileRow | null) {
@@ -26,6 +28,8 @@ function serialize(row: ProfileRow | null) {
     miniColor: row?.mini_color ?? null,
     miniMood: row?.mini_mood ?? null,
     photoUrl: row?.photo_url ?? null,
+    bannerTitle: row?.banner_title ?? null,
+    bannerSubtitle: row?.banner_subtitle ?? null,
   };
 }
 
@@ -37,6 +41,8 @@ const FIELD_TO_COLUMN: Record<string, string> = {
   miniLike: 'mini_like',
   miniColor: 'mini_color',
   miniMood: 'mini_mood',
+  bannerTitle: 'banner_title',
+  bannerSubtitle: 'banner_subtitle',
 };
 
 profileRoute.get('/', async (c) => {
