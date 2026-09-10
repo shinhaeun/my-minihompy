@@ -81,3 +81,10 @@ export const visitCounts = pgTable('visit_counts', {
   visitDate: date('visit_date').primaryKey(),
   count: integer('count').notNull().default(0),
 });
+
+export const favoritePeople = pgTable('favorite_people', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  note: text('note'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
