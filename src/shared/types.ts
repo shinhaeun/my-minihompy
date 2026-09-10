@@ -49,6 +49,12 @@ export interface VisitCounts {
   total: number;
 }
 
+export interface FavoritePerson {
+  id: string;
+  name: string;
+  note: string | null;
+}
+
 export const NAV_PAGES = [
   'profile',
   'bgm',

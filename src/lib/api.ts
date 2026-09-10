@@ -1,6 +1,7 @@
 import type {
   DiaryEntry,
   DiaryMonthEntry,
+  FavoritePerson,
   GuestbookEntry,
   Profile,
   SessionResponse,
@@ -93,6 +94,12 @@ export const api = {
   },
   visits: {
     ping: () => request<VisitCounts>('/api/visits', { method: 'POST' }),
+  },
+  favorites: {
+    list: () => request<FavoritePerson[]>('/api/favorites'),
+    create: (name: string, note: string) =>
+      request<FavoritePerson>('/api/favorites', { method: 'POST', body: JSON.stringify({ name, note }) }),
+    remove: (id: string) => request<void>(`/api/favorites/${id}`, { method: 'DELETE' }),
   },
 };
 

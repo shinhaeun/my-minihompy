@@ -29,6 +29,13 @@
       "when": 1789015483764,
       "tag": "20260910044443_add_banner_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789016270925,
+      "tag": "20260910045750_add_favorite_people",
+      "breakpoints": true
     }
   ]
 }
