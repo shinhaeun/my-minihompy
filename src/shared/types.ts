@@ -9,6 +9,8 @@ export interface Profile {
   miniColor: string | null;
   miniMood: string | null;
   photoUrl: string | null;
+  bannerTitle: string | null;
+  bannerSubtitle: string | null;
 }
 
 export interface GuestbookEntry {

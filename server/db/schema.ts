@@ -24,6 +24,8 @@ export const profile = pgTable('profile', {
   miniColor: text('mini_color'),
   miniMood: text('mini_mood'),
   photoUrl: text('photo_url'),
+  bannerTitle: text('banner_title'),
+  bannerSubtitle: text('banner_subtitle'),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   check('profile_id_check', sql`${table.id} = 1`),
