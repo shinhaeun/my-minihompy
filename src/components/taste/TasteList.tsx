@@ -13,12 +13,12 @@ function dateLabel(iso: string) {
 }
 
 function TastePostCard({ post, onOpen }: { post: TastePostSummary; onOpen: () => void }) {
-  useSearchable(`taste-${post.id}`, 'taste', `${post.category ?? ''} ${post.title} ${post.excerpt}`);
+  useSearchable(`taste-${post.id}`, 'taste', `${post.category?.name ?? ''} ${post.title} ${post.excerpt}`);
   return (
     <div className="taste-post" onClick={onOpen}>
       <div className="taste-post-main">
         <h3>
-          {post.category && <CategoryChip name={post.category} />}
+          {post.category && <CategoryChip category={post.category} />}
           <Highlight id={`taste-${post.id}`} text={post.title} />
           {post.visibility === 'private' && <span className="taste-private-badge">비공개</span>}
         </h3>
@@ -60,10 +60,11 @@ export function TasteList({ onOpenRead, onOpenWrite, refreshToken }: TasteListPr
     };
   }, [refreshToken]);
 
-  const categories = [...new Set(posts.map((p) => p.category).filter((c): c is string => !!c))].sort(
-    (a, b) => a.localeCompare(b, 'ko'),
-  );
-  const visible = filter ? posts.filter((p) => p.category === filter) : posts;
+  // 필터 버튼은 실제로 글이 달려 있는 카테고리만 (이름 기준으로 중복 제거)
+  const categories = [...new Map(
+    posts.filter((p) => p.category).map((p) => [p.category!.id, p.category!]),
+  ).values()];
+  const visible = filter ? posts.filter((p) => p.category?.id === filter) : posts;
 
   return (
     <div className="taste-list">
@@ -82,14 +83,14 @@ export function TasteList({ onOpenRead, onOpenWrite, refreshToken }: TasteListPr
           >
             전체
           </button>
-          {categories.map((name) => (
+          {categories.map((category) => (
             <button
-              key={name}
+              key={category.id}
               type="button"
-              className={`taste-filter-btn${filter === name ? ' active' : ''}`}
-              onClick={() => setFilter(filter === name ? null : name)}
+              className={`taste-filter-btn${filter === category.id ? ' active' : ''}`}
+              onClick={() => setFilter(filter === category.id ? null : category.id)}
             >
-              {name}
+              {category.name}
             </button>
           ))}
         </div>

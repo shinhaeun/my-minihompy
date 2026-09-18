@@ -5,6 +5,8 @@ import type {
   GuestbookEntry,
   Profile,
   SessionResponse,
+  TasteCategory,
+  TasteColor,
   TastePost,
   TastePostInput,
   TastePostSummary,
@@ -106,7 +108,14 @@ export const api = {
   },
   taste: {
     list: () => request<TastePostSummary[]>('/api/taste'),
-    categories: () => request<string[]>('/api/taste/categories'),
+    categories: () => request<TasteCategory[]>('/api/taste/categories'),
+    createCategory: (name: string, color: TasteColor) =>
+      request<TasteCategory>('/api/taste/categories', {
+        method: 'POST',
+        body: JSON.stringify({ name, color }),
+      }),
+    removeCategory: (id: string) =>
+      request<void>(`/api/taste/categories/${id}`, { method: 'DELETE' }),
     get: async (id: string) => {
       try {
         return await request<TastePost>(`/api/taste/${id}`);

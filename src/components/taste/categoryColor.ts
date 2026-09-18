@@ -1,19 +1,16 @@
-// 카테고리는 주인장이 자유롭게 만들기 때문에 색을 미리 정해둘 수 없다.
-// 이름을 해시해서 파스텔 팔레트 중 하나에 고정 배정 — 같은 카테고리는 항상 같은 색으로 보인다.
-const PALETTE = [
-  { bg: '#FBE2EC', fg: '#A63A66' }, // 핑크
-  { bg: '#E8E0F7', fg: '#5B3A9E' }, // 보라
-  { bg: '#DDE8FA', fg: '#2F5A9E' }, // 파랑
-  { bg: '#DDF0E4', fg: '#2F7048' }, // 초록
-  { bg: '#FBEFD6', fg: '#8A5A16' }, // 노랑
-  { bg: '#FADFD6', fg: '#A04A2E' }, // 주황
-  { bg: '#D9EFF0', fg: '#1F6B70' }, // 청록
-] as const;
+import type { TasteColor } from '../../shared/types';
 
-export function categoryColor(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
-  }
-  return PALETTE[hash % PALETTE.length];
+// 주인장이 카테고리를 만들 때 고르는 색. 키는 서버의 COLOR_VALUES와 같아야 한다.
+export const CATEGORY_COLORS: { key: TasteColor; label: string; bg: string; fg: string }[] = [
+  { key: 'pink', label: '분홍', bg: '#FBE2EC', fg: '#A63A66' },
+  { key: 'purple', label: '보라', bg: '#E8E0F7', fg: '#5B3A9E' },
+  { key: 'blue', label: '파랑', bg: '#DDE8FA', fg: '#2F5A9E' },
+  { key: 'green', label: '초록', bg: '#DDF0E4', fg: '#2F7048' },
+  { key: 'yellow', label: '노랑', bg: '#FBEFD6', fg: '#8A5A16' },
+  { key: 'orange', label: '주황', bg: '#FADFD6', fg: '#A04A2E' },
+  { key: 'teal', label: '청록', bg: '#D9EFF0', fg: '#1F6B70' },
+];
+
+export function categoryColor(key: TasteColor) {
+  return CATEGORY_COLORS.find((c) => c.key === key) ?? CATEGORY_COLORS[0];
 }

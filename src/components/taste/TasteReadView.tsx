@@ -64,7 +64,7 @@ export function TasteReadView({ id, onBack, onEdit, onDeleted }: TasteReadViewPr
       {post && (
         <>
           <h3 className="taste-read-title">
-            {post.category && <CategoryChip name={post.category} />}
+            {post.category && <CategoryChip category={post.category} />}
             {post.title}
           </h3>
           <div className="taste-read-meta">
@@ -81,7 +81,10 @@ export function TasteReadView({ id, onBack, onEdit, onDeleted }: TasteReadViewPr
                   </p>
                 )
               ) : (
-                <img key={i} className="taste-read-image" src={block.url} alt="" />
+                <figure key={i} className={`taste-figure size-${block.size} align-${block.align}`}>
+                  <img src={block.url} alt={block.caption} />
+                  {block.caption && <figcaption>{block.caption}</figcaption>}
+                </figure>
               ),
             )}
             {!hasBody && <p className="taste-read-text">(내용 없음)</p>}
