@@ -57,12 +57,19 @@ export async function verifySecret(plain: string, stored: string): Promise<boole
   return diff === 0;
 }
 
+// 사파리는 http://localhost에서 Secure 쿠키를 저장하지 않아 로컬 개발 중 로그인이 풀린다.
+// 배포 주소는 항상 https이므로, localhost일 때만 Secure를 떼서 로컬 확인이 가능하게 한다.
+function isLocalhost(c: Context<{ Bindings: Env }>): boolean {
+  const { hostname } = new URL(c.req.url);
+  return hostname === 'localhost' || hostname === '127.0.0.1';
+}
+
 export async function issueOwnerSession(c: Context<{ Bindings: Env }>): Promise<void> {
   const exp = Math.floor(Date.now() / 1000) + SESSION_MAX_AGE;
   const token = await sign({ sub: 'owner', exp }, c.env.SESSION_SECRET, 'HS256');
   setCookie(c, SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: true,
+    secure: !isLocalhost(c),
     sameSite: 'Lax',
     path: '/',
     maxAge: SESSION_MAX_AGE,
