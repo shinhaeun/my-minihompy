@@ -88,3 +88,16 @@ export const favoritePeople = pgTable('favorite_people', {
   note: text('note'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+// 취향정보 탭: 좋아하는 것에 대해 자유롭게 쓰는 블로그 형태의 글 목록
+export const tastePosts = pgTable('taste_posts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: text('title').notNull(),
+  content: text('content').notNull().default(''),
+  visibility: text('visibility').notNull().default('public'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  check('taste_posts_visibility_check', sql`${table.visibility} in ('public', 'private')`),
+  index('taste_posts_created_at_idx').on(table.createdAt),
+]);

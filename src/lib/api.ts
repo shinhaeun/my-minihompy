@@ -5,6 +5,9 @@ import type {
   GuestbookEntry,
   Profile,
   SessionResponse,
+  TastePost,
+  TastePostSummary,
+  TasteVisibility,
   VisitCounts,
 } from '../shared/types';
 
@@ -100,6 +103,22 @@ export const api = {
     create: (name: string, note: string) =>
       request<FavoritePerson>('/api/favorites', { method: 'POST', body: JSON.stringify({ name, note }) }),
     remove: (id: string) => request<void>(`/api/favorites/${id}`, { method: 'DELETE' }),
+  },
+  taste: {
+    list: () => request<TastePostSummary[]>('/api/taste'),
+    get: async (id: string) => {
+      try {
+        return await request<TastePost>(`/api/taste/${id}`);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 404) return null;
+        throw err;
+      }
+    },
+    create: (patch: { title: string; content: string; visibility: TasteVisibility }) =>
+      request<TastePost>('/api/taste', { method: 'POST', body: JSON.stringify(patch) }),
+    update: (id: string, patch: { title: string; content: string; visibility: TasteVisibility }) =>
+      request<TastePost>(`/api/taste/${id}`, { method: 'PUT', body: JSON.stringify(patch) }),
+    remove: (id: string) => request<void>(`/api/taste/${id}`, { method: 'DELETE' }),
   },
 };
 

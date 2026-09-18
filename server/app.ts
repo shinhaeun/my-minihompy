@@ -7,6 +7,7 @@ import { guestbookRoute } from './routes/guestbook';
 import { diaryRoute } from './routes/diary';
 import { visitsRoute } from './routes/visits';
 import { favoritesRoute } from './routes/favorites';
+import { tasteRoute } from './routes/taste';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -17,5 +18,6 @@ app.route('/api/guestbook', guestbookRoute);
 app.route('/api/diary', diaryRoute);
 app.route('/api/visits', visitsRoute);
 app.route('/api/favorites', favoritesRoute);
+app.route('/api/taste', tasteRoute);
 
 export default app;

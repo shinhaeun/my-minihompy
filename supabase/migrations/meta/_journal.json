@@ -36,6 +36,13 @@
       "when": 1789016270925,
       "tag": "20260910045750_add_favorite_people",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789752502357,
+      "tag": "20260918172822_add_taste_posts",
+      "breakpoints": true
     }
   ]
 }

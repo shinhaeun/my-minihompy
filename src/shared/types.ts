@@ -55,6 +55,25 @@ export interface FavoritePerson {
   note: string | null;
 }
 
+export type TasteVisibility = 'public' | 'private';
+
+/** 취향정보 목록에 쓰이는 요약 — 본문 대신 excerpt만 들어있음 */
+export interface TastePostSummary {
+  id: string;
+  title: string;
+  excerpt: string;
+  visibility: TasteVisibility;
+  createdAt: string;
+}
+
+export interface TastePost {
+  id: string;
+  title: string;
+  content: string;
+  visibility: TasteVisibility;
+  createdAt: string;
+}
+
 export const NAV_PAGES = [
   'profile',
   'bgm',
