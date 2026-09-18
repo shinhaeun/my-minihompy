@@ -6,8 +6,8 @@ import type {
   Profile,
   SessionResponse,
   TastePost,
+  TastePostInput,
   TastePostSummary,
-  TasteVisibility,
   VisitCounts,
 } from '../shared/types';
 
@@ -106,6 +106,7 @@ export const api = {
   },
   taste: {
     list: () => request<TastePostSummary[]>('/api/taste'),
+    categories: () => request<string[]>('/api/taste/categories'),
     get: async (id: string) => {
       try {
         return await request<TastePost>(`/api/taste/${id}`);
@@ -114,11 +115,19 @@ export const api = {
         throw err;
       }
     },
-    create: (patch: { title: string; content: string; visibility: TasteVisibility }) =>
+    create: (patch: TastePostInput) =>
       request<TastePost>('/api/taste', { method: 'POST', body: JSON.stringify(patch) }),
-    update: (id: string, patch: { title: string; content: string; visibility: TasteVisibility }) =>
+    update: (id: string, patch: TastePostInput) =>
       request<TastePost>(`/api/taste/${id}`, { method: 'PUT', body: JSON.stringify(patch) }),
     remove: (id: string) => request<void>(`/api/taste/${id}`, { method: 'DELETE' }),
+    uploadImage: (file: File) => {
+      const form = new FormData();
+      form.append('image', file);
+      return request<{ path: string; url: string }>('/api/taste/images', {
+        method: 'POST',
+        body: form,
+      });
+    },
   },
 };
 

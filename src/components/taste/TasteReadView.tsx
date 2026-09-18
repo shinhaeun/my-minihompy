@@ -3,6 +3,7 @@ import { useSession } from '../../context/SessionContext';
 import { useModal } from '../../context/ModalContext';
 import { api } from '../../lib/api';
 import type { TastePost } from '../../shared/types';
+import { CategoryChip } from './CategoryChip';
 
 function dateLabel(iso: string) {
   const d = new Date(iso);
@@ -40,6 +41,8 @@ export function TasteReadView({ id, onBack, onEdit, onDeleted }: TasteReadViewPr
     onDeleted();
   }
 
+  const hasBody = post?.blocks.some((b) => (b.type === 'text' ? b.text.trim() : true));
+
   return (
     <div className="taste-read">
       <div className="taste-view-header">
@@ -60,12 +63,29 @@ export function TasteReadView({ id, onBack, onEdit, onDeleted }: TasteReadViewPr
 
       {post && (
         <>
-          <h3 className="taste-read-title">{post.title}</h3>
+          <h3 className="taste-read-title">
+            {post.category && <CategoryChip name={post.category} />}
+            {post.title}
+          </h3>
           <div className="taste-read-meta">
             <span>{dateLabel(post.createdAt)}</span>
             {post.visibility === 'private' && <span className="taste-private-badge">비공개</span>}
           </div>
-          <p className="taste-read-content">{post.content || '(내용 없음)'}</p>
+
+          <div className="taste-read-body">
+            {post.blocks.map((block, i) =>
+              block.type === 'text' ? (
+                block.text.trim() && (
+                  <p key={i} className="taste-read-text">
+                    {block.text}
+                  </p>
+                )
+              ) : (
+                <img key={i} className="taste-read-image" src={block.url} alt="" />
+              ),
+            )}
+            {!hasBody && <p className="taste-read-text">(내용 없음)</p>}
+          </div>
         </>
       )}
     </div>

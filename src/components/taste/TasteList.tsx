@@ -3,6 +3,7 @@ import { useSession } from '../../context/SessionContext';
 import { api } from '../../lib/api';
 import type { TastePostSummary } from '../../shared/types';
 import { Highlight, useSearchable } from '../common/Highlight';
+import { CategoryChip } from './CategoryChip';
 
 function dateLabel(iso: string) {
   const d = new Date(iso);
@@ -12,15 +13,23 @@ function dateLabel(iso: string) {
 }
 
 function TastePostCard({ post, onOpen }: { post: TastePostSummary; onOpen: () => void }) {
-  useSearchable(`taste-${post.id}`, 'taste', `${post.title} ${post.excerpt}`);
+  useSearchable(`taste-${post.id}`, 'taste', `${post.category ?? ''} ${post.title} ${post.excerpt}`);
   return (
     <div className="taste-post" onClick={onOpen}>
-      <h3>
-        <Highlight id={`taste-${post.id}`} text={post.title} />
-        {post.visibility === 'private' && <span className="taste-private-badge">비공개</span>}
-      </h3>
-      <div className="date">{dateLabel(post.createdAt)}</div>
-      {post.excerpt && <p>{post.excerpt}</p>}
+      <div className="taste-post-main">
+        <h3>
+          {post.category && <CategoryChip name={post.category} />}
+          <Highlight id={`taste-${post.id}`} text={post.title} />
+          {post.visibility === 'private' && <span className="taste-private-badge">비공개</span>}
+        </h3>
+        <div className="date">{dateLabel(post.createdAt)}</div>
+        {post.excerpt && <p>{post.excerpt}</p>}
+      </div>
+      {post.thumbUrl && (
+        <div className="taste-post-thumb">
+          <img src={post.thumbUrl} alt="" />
+        </div>
+      )}
     </div>
   );
 }
@@ -34,6 +43,7 @@ interface TasteListProps {
 export function TasteList({ onOpenRead, onOpenWrite, refreshToken }: TasteListProps) {
   const { isOwner } = useSession();
   const [posts, setPosts] = useState<TastePostSummary[]>([]);
+  const [filter, setFilter] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +60,11 @@ export function TasteList({ onOpenRead, onOpenWrite, refreshToken }: TasteListPr
     };
   }, [refreshToken]);
 
+  const categories = [...new Set(posts.map((p) => p.category).filter((c): c is string => !!c))].sort(
+    (a, b) => a.localeCompare(b, 'ko'),
+  );
+  const visible = filter ? posts.filter((p) => p.category === filter) : posts;
+
   return (
     <div className="taste-list">
       {isOwner && (
@@ -57,10 +72,37 @@ export function TasteList({ onOpenRead, onOpenWrite, refreshToken }: TasteListPr
           ✎ 새 글 쓰기
         </button>
       )}
-      {posts.map((post) => (
+
+      {categories.length > 0 && (
+        <div className="taste-filter-row">
+          <button
+            type="button"
+            className={`taste-filter-btn${filter === null ? ' active' : ''}`}
+            onClick={() => setFilter(null)}
+          >
+            전체
+          </button>
+          {categories.map((name) => (
+            <button
+              key={name}
+              type="button"
+              className={`taste-filter-btn${filter === name ? ' active' : ''}`}
+              onClick={() => setFilter(filter === name ? null : name)}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {visible.map((post) => (
         <TastePostCard key={post.id} post={post} onOpen={() => onOpenRead(post.id)} />
       ))}
-      {posts.length === 0 && <p className="taste-empty">아직 올라온 글이 없어요.</p>}
+      {visible.length === 0 && (
+        <p className="taste-empty">
+          {filter ? '이 카테고리에 글이 없어요.' : '아직 올라온 글이 없어요.'}
+        </p>
+      )}
     </div>
   );
 }

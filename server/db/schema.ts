@@ -7,6 +7,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   smallint,
   text,
@@ -89,11 +90,14 @@ export const favoritePeople = pgTable('favorite_people', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-// 취향정보 탭: 좋아하는 것에 대해 자유롭게 쓰는 블로그 형태의 글 목록
+// 취향정보 탭: 좋아하는 것에 대해 자유롭게 쓰는 블로그 형태의 글 목록.
+// 본문은 글과 사진을 원하는 순서로 섞을 수 있어야 해서 단일 text가 아니라
+// [{type:'text',text}, {type:'image',path}] 형태의 블록 배열로 저장한다.
 export const tastePosts = pgTable('taste_posts', {
   id: uuid('id').primaryKey().defaultRandom(),
+  category: text('category'),
   title: text('title').notNull(),
-  content: text('content').notNull().default(''),
+  blocks: jsonb('blocks').notNull().default(sql`'[]'::jsonb`),
   visibility: text('visibility').notNull().default('public'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

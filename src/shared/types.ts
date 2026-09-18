@@ -57,21 +57,39 @@ export interface FavoritePerson {
 
 export type TasteVisibility = 'public' | 'private';
 
-/** 취향정보 목록에 쓰이는 요약 — 본문 대신 excerpt만 들어있음 */
+/** 본문 블록 — 글과 사진을 원하는 순서로 섞기 위해 배열로 다룬다 */
+export type TasteBlock =
+  | { type: 'text'; text: string }
+  | { type: 'image'; path: string; url: string };
+
+/** 저장할 때 서버로 보내는 형태 (사진은 서명 URL 없이 경로만) */
+export type TasteBlockInput = { type: 'text'; text: string } | { type: 'image'; path: string };
+
+/** 취향정보 목록에 쓰이는 요약 — 본문 대신 excerpt와 첫 사진만 들어있음 */
 export interface TastePostSummary {
   id: string;
+  category: string | null;
   title: string;
   excerpt: string;
+  thumbUrl: string | null;
   visibility: TasteVisibility;
   createdAt: string;
 }
 
 export interface TastePost {
   id: string;
+  category: string | null;
   title: string;
-  content: string;
+  blocks: TasteBlock[];
   visibility: TasteVisibility;
   createdAt: string;
+}
+
+export interface TastePostInput {
+  title: string;
+  category: string;
+  blocks: TasteBlockInput[];
+  visibility: TasteVisibility;
 }
 
 export const NAV_PAGES = [
