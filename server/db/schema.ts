@@ -90,6 +90,23 @@ export const favoritePeople = pgTable('favorite_people', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+// 캘린더 탭: 날짜별 일정. 월/주/일 보기 모두 같은 표를 기간으로 잘라 읽는다.
+// 시간은 '종일'을 허용해야 해서 nullable, 형식은 'HH:MM'으로 서버에서 검증한다.
+export const scheduleEvents = pgTable('schedule_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  eventDate: date('event_date').notNull(),
+  startTime: text('start_time'),
+  title: text('title').notNull(),
+  memo: text('memo'),
+  color: text('color').notNull().default('purple'),
+  visibility: text('visibility').notNull().default('public'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  check('schedule_events_visibility_check', sql`${table.visibility} in ('public', 'private')`),
+  index('schedule_events_event_date_idx').on(table.eventDate),
+]);
+
 // 카테고리는 주인장이 미리 만들어두고 글 쓸 때 골라 쓰는 목록.
 // 색도 직접 고르기 때문에 글마다 문자열로 들고 있지 않고 별도 표로 둔다.
 export const tasteCategories = pgTable('taste_categories', {
