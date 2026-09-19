@@ -5,6 +5,11 @@ import type {
   GuestbookEntry,
   Profile,
   SessionResponse,
+  TasteCategory,
+  TasteColor,
+  TastePost,
+  TastePostInput,
+  TastePostSummary,
   VisitCounts,
 } from '../shared/types';
 
@@ -100,6 +105,38 @@ export const api = {
     create: (name: string, note: string) =>
       request<FavoritePerson>('/api/favorites', { method: 'POST', body: JSON.stringify({ name, note }) }),
     remove: (id: string) => request<void>(`/api/favorites/${id}`, { method: 'DELETE' }),
+  },
+  taste: {
+    list: () => request<TastePostSummary[]>('/api/taste'),
+    categories: () => request<TasteCategory[]>('/api/taste/categories'),
+    createCategory: (name: string, color: TasteColor) =>
+      request<TasteCategory>('/api/taste/categories', {
+        method: 'POST',
+        body: JSON.stringify({ name, color }),
+      }),
+    removeCategory: (id: string) =>
+      request<void>(`/api/taste/categories/${id}`, { method: 'DELETE' }),
+    get: async (id: string) => {
+      try {
+        return await request<TastePost>(`/api/taste/${id}`);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 404) return null;
+        throw err;
+      }
+    },
+    create: (patch: TastePostInput) =>
+      request<TastePost>('/api/taste', { method: 'POST', body: JSON.stringify(patch) }),
+    update: (id: string, patch: TastePostInput) =>
+      request<TastePost>(`/api/taste/${id}`, { method: 'PUT', body: JSON.stringify(patch) }),
+    remove: (id: string) => request<void>(`/api/taste/${id}`, { method: 'DELETE' }),
+    uploadImage: (file: File) => {
+      const form = new FormData();
+      form.append('image', file);
+      return request<{ path: string; url: string }>('/api/taste/images', {
+        method: 'POST',
+        body: form,
+      });
+    },
   },
 };
 

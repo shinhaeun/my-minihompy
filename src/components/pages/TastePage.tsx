@@ -1,18 +1,46 @@
-import { useSearchable } from '../common/Highlight';
+import { useState } from 'react';
+import { TasteList } from '../taste/TasteList';
+import { TasteReadView } from '../taste/TasteReadView';
+import { TasteWriteView } from '../taste/TasteWriteView';
 
-const LINE1 = '취향정보 기능은 다음 단계에서 만들 거예요.';
-const LINE2 = '내 취향에 대해 자유롭게 쓸 수 있는 공간이 여기 들어와요.';
+type View =
+  | { mode: 'list' }
+  | { mode: 'read'; id: string }
+  | { mode: 'write'; id: string | null };
 
 export function TastePage({ active }: { active: boolean }) {
-  useSearchable('taste-placeholder', 'taste', `${LINE1} ${LINE2}`);
+  const [view, setView] = useState<View>({ mode: 'list' });
+  const [refreshToken, setRefreshToken] = useState(0);
+
+  function backToList() {
+    setRefreshToken((n) => n + 1);
+    setView({ mode: 'list' });
+  }
+
   return (
     <div className={`page${active ? ' active' : ''}`}>
-      <div className="page-placeholder">
-        <span className="big">❖</span>
-        {LINE1}
-        <br />
-        {LINE2}
-      </div>
+      {view.mode === 'list' && (
+        <TasteList
+          refreshToken={refreshToken}
+          onOpenRead={(id) => setView({ mode: 'read', id })}
+          onOpenWrite={() => setView({ mode: 'write', id: null })}
+        />
+      )}
+      {view.mode === 'read' && (
+        <TasteReadView
+          id={view.id}
+          onBack={() => setView({ mode: 'list' })}
+          onEdit={() => setView({ mode: 'write', id: view.id })}
+          onDeleted={backToList}
+        />
+      )}
+      {view.mode === 'write' && (
+        <TasteWriteView
+          id={view.id}
+          onBack={() => setView({ mode: 'list' })}
+          onSaved={backToList}
+        />
+      )}
     </div>
   );
 }

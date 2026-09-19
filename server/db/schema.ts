@@ -7,6 +7,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   smallint,
   text,
@@ -88,3 +89,28 @@ export const favoritePeople = pgTable('favorite_people', {
   note: text('note'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+// 카테고리는 주인장이 미리 만들어두고 글 쓸 때 골라 쓰는 목록.
+// 색도 직접 고르기 때문에 글마다 문자열로 들고 있지 않고 별도 표로 둔다.
+export const tasteCategories = pgTable('taste_categories', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull().unique(),
+  color: text('color').notNull().default('pink'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// 취향정보 탭: 좋아하는 것에 대해 자유롭게 쓰는 블로그 형태의 글 목록.
+// 본문은 글과 사진을 원하는 순서로 섞을 수 있어야 해서 단일 text가 아니라
+// [{type:'text',text}, {type:'image',path}] 형태의 블록 배열로 저장한다.
+export const tastePosts = pgTable('taste_posts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  categoryId: uuid('category_id').references(() => tasteCategories.id, { onDelete: 'set null' }),
+  title: text('title').notNull(),
+  blocks: jsonb('blocks').notNull().default(sql`'[]'::jsonb`),
+  visibility: text('visibility').notNull().default('public'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  check('taste_posts_visibility_check', sql`${table.visibility} in ('public', 'private')`),
+  index('taste_posts_created_at_idx').on(table.createdAt),
+]);

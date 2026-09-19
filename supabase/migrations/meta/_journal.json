@@ -36,6 +36,20 @@
       "when": 1789016270925,
       "tag": "20260910045750_add_favorite_people",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789753218232,
+      "tag": "20260918174018_add_taste_posts",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789755403371,
+      "tag": "20260918181643_add_taste_categories",
+      "breakpoints": true
     }
   ]
 }
