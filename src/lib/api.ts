@@ -4,6 +4,8 @@ import type {
   FavoritePerson,
   GuestbookEntry,
   Profile,
+  ScheduleEvent,
+  ScheduleEventInput,
   SessionResponse,
   TasteCategory,
   TasteColor,
@@ -137,6 +139,15 @@ export const api = {
         body: form,
       });
     },
+  },
+  schedule: {
+    list: (start: string, end: string) =>
+      request<ScheduleEvent[]>(`/api/schedule?start=${start}&end=${end}`),
+    create: (patch: ScheduleEventInput) =>
+      request<ScheduleEvent>('/api/schedule', { method: 'POST', body: JSON.stringify(patch) }),
+    update: (id: string, patch: ScheduleEventInput) =>
+      request<ScheduleEvent>(`/api/schedule/${id}`, { method: 'PUT', body: JSON.stringify(patch) }),
+    remove: (id: string) => request<void>(`/api/schedule/${id}`, { method: 'DELETE' }),
   },
 };
 

@@ -50,6 +50,13 @@
       "when": 1789755403371,
       "tag": "20260918181643_add_taste_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789793603474,
+      "tag": "20260919045323_add_schedule_events",
+      "breakpoints": true
     }
   ]
 }

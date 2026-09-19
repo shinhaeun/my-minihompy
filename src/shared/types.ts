@@ -112,6 +112,28 @@ export interface TastePostInput {
   visibility: TasteVisibility;
 }
 
+/** 캘린더 탭의 일정 — 월/주/일 보기가 모두 같은 데이터를 쓴다 */
+export interface ScheduleEvent {
+  id: string;
+  date: string; // 'YYYY-MM-DD'
+  startTime: string | null; // 'HH:MM', null이면 종일
+  title: string;
+  memo: string | null;
+  color: TasteColor;
+  visibility: TasteVisibility;
+}
+
+export interface ScheduleEventInput {
+  date: string;
+  startTime: string;
+  title: string;
+  memo: string;
+  color: TasteColor;
+  visibility: TasteVisibility;
+}
+
+export type CalendarViewMode = 'month' | 'week' | 'day';
+
 export const NAV_PAGES = [
   'profile',
   'bgm',

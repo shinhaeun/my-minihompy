@@ -8,6 +8,7 @@ import { diaryRoute } from './routes/diary';
 import { visitsRoute } from './routes/visits';
 import { favoritesRoute } from './routes/favorites';
 import { tasteRoute } from './routes/taste';
+import { scheduleRoute } from './routes/schedule';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -19,5 +20,6 @@ app.route('/api/diary', diaryRoute);
 app.route('/api/visits', visitsRoute);
 app.route('/api/favorites', favoritesRoute);
 app.route('/api/taste', tasteRoute);
+app.route('/api/schedule', scheduleRoute);
 
 export default app;
